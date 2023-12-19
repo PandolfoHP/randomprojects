@@ -1,0 +1,1 @@
+Just a collection of simple programs I did for fun
