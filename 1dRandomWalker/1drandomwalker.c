@@ -19,14 +19,17 @@ double analiticsolution(double xf, double x0, double D);
 
 
 int main(void){
-    double xf=100;
-    double x0=50;
-    double stepsize=1;
+    double xf=1.00;
+    double x0=xf/2;
+    double stepsize=0.01;
     double D=stepsize*stepsize/2;
-    long int N=10001;
+    long int N=1001;
     srand48(time(NULL)); 
     struct Data meantime=MFPTandError(xf, x0, stepsize, D, N);
     struct Data drunk=drunkard(xf,x0,stepsize);
+    //for(int i=0;i<drunk.TotTimePerWalker;i++){
+    //    printf("\n %.2lf", drunk.Path[i]);
+    //}
     printf("\nMFPT: %.2lf (+-) %2lf \n", meantime.MFPT, meantime.Error);
     printf("Analitic solution: %.2f ", analiticsolution(xf,x0,D));
     free(drunk.Path);
@@ -39,35 +42,28 @@ struct Data drunkard(double xf, double x0, double stepsize){
     struct Data result;
     double l = stepsize;
     double location = x0;
-    long long int tau=0;
-    int antistuck = 1;
+    unsigned int tau=0;
     result.Path=malloc(1000000*sizeof(double));
     //if the drunkard fall off the sinkhole, it stops.
-        while(location<xf){
+        while(location<=xf){
 
             //randomic number with [0.0 , 1.0] limits
             float luckynumber=drand48();
-            if(location==0.00000){
-                location=location+l;
-                antistuck=0;
-                //reflexive wall, if drunkard hit it, step forward
-            }
             
-            if(luckynumber>0.5){
+            if(luckynumber>0.500){
                 location=location+l;
                 //if randomic higher than 0.5 step forward
 
             }
-            else{
+            else {
             
                 location=location-l;
                 //if randomic smaller than 0.5 step backwards
             }
-            if(antistuck+1>=10000){
-                printf("Drunkard stuck in an infinite loop. Exiting.\n");
-                break;
+            if(location<=0.00000){
+                location=location+l;
+                //reflexive wall, if drunkard hit it, step forward
             }
-
             
             tau++;
             result.Path[tau-1]=location;
